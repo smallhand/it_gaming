@@ -7,18 +7,30 @@ hint.addEventListener('click', show_tar);
 const tar_arr = [];
 const guess_arr = [];
 
+let round = 0;
 let tar = "";
-for (let i = 0; i < 4; i++)
+init();
+
+function init()
 {
-    tar += Math.floor(Math.random() * 10);
+    round = 0;
+    tar = "";
+    for (let i = 0; i < 4; i++)
+    {
+        tar += Math.floor(Math.random() * 10);
+    }
+
 }
 
 function judge(guess_n)
 {
     let ans = "";
+    round += 1;
     if (guess_n === tar)
     {
-        alert("bingo!!! the target number is: " + tar);
+        alert("bingo!!! the target number is: " + tar + ", total guess " + round + " times");
+        location.reload();
+        init();
     }
     else
     {
@@ -63,15 +75,11 @@ function show_tar()
 }
 
 function getGuess() {
-    let history = document.querySelector('.history');
+    let history = document.querySelector('.his_content');
     let guess_n = document.getElementById("guess_v").value;
 
     ori = history.innerHTML;
-    history.innerHTML = ori + guess_n + "<br>";
-    history.innerHTML += judge(guess_n);
+    //history.innerHTML = ori + guess_n + "<br>";
+    //history.innerHTML += judge(guess_n);
+    history.innerHTML = guess_n + ", result: " + judge(guess_n) + ori + "<br>";
 }
-
-
-
-// input sumbit, button
-// ===, ==
