@@ -1,0 +1,21 @@
+body {
+    width: 90%;
+    margin: 0 auto;
+}
+
+.bg {
+    background-color: rgb(120, 179, 239);
+    position: relative;
+    left: 35%;
+    /*margin: 1%;*/
+    overflow: auto;
+    width: 550px;
+    height: 700px;
+}
+
+[class^='stair_']{
+    position: absolute;
+    float: left;
+    width: fit-content;
+    height: fit-content;
+}
