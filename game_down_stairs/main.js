@@ -3,6 +3,7 @@ let mv_ivl_id, img_ivl_id;
 let stairs_arr = []; // element obj
 let stairs_status = [];
 
+
 let imgs;
 let img_src = ["img/stair.png", "img/spike.png", "img/spring.png"]
 let loaded = 0;
@@ -44,7 +45,7 @@ function moveUp()
 
     for (let idx = 0; idx < stairs_arr.length; idx++)
     {
-        if (stairs_status[idx] === 1)
+        if (stairs_status[idx].state === 1)
         {
             if ((parseInt(stairs_arr[idx].style.top) + stairs_arr[idx].offsetHeight) >= 0)
             {
@@ -54,7 +55,7 @@ function moveUp()
             if ((parseInt(stairs_arr[idx].style.top) + stairs_arr[idx].offsetHeight) < 0)
             {
                 //clearInterval(mv_ivl_id);
-                stairs_status[idx] = 0;
+                stairs_status[idx].state = 0;
                 //console.log("clear move up");
                 loaded-=1;
                 console.assert(loaded >= 0);
@@ -69,7 +70,7 @@ function create_img()
 {
     let src_idx;
     let i = Math.floor(Math.random() * imgs.length);
-    if (stairs_status[i] === 1)
+    if (stairs_status[i].state === 1)
     {
         return;
     }
@@ -85,7 +86,7 @@ function create_img()
 function getSize(idx)
 {
     stairs_arr = document.querySelectorAll(".stair_normal");
-    stairs_status[idx] = 1;
+    stairs_status[idx].state = 1;
     randomEle(stairs_arr[idx], 0);
     moveUp();
 
@@ -95,12 +96,14 @@ function getSize(idx)
 }
 
 
+// initialize the status of stairs
 window.onload = function()
 {
     imgs = document.querySelectorAll(".img_stair");
     for (i = 0; i < imgs.length; i++)
     {
-        stairs_status[i] = 0;
+        stairs_status[i] = {x: 0, y:0, state: 0};
+        //stairs_status[i] = 0;
     }
 
     //console.log(stairs_arr.length)
