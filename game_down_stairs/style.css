@@ -8,9 +8,17 @@ body {
     position: relative;
     left: 35%;
     /*margin: 1%;*/
-    overflow: auto;
+    /*overflow: auto;*/
+    overflow: hidden;
     width: 550px;
     height: 700px;
+}
+
+.up_spike {
+    position: absolute;
+    float: left;
+    width: fit-content;
+    height: fit-content;
 }
 
 [class^='stair_']{
@@ -18,4 +26,13 @@ body {
     float: left;
     width: fit-content;
     height: fit-content;
+}
+
+
+[class^='role']{
+    position: absolute;
+    float: left;
+    width: fit-content;
+    height: fit-content;
+    margin: 0%;
 }
