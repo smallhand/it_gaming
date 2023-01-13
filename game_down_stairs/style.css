@@ -21,6 +21,14 @@ body {
     height: fit-content;
 }
 
+.top_bar {
+    position: relative;
+    left: 35%;
+    width: fit-content;
+    height: fit-content;
+    margin-top: 1%;
+}
+
 [class^='stair_']{
     position: absolute;
     float: left;

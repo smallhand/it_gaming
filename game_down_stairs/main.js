@@ -8,6 +8,7 @@ let stairs_status = [];
 
 let fall_flag;
 let t;
+let life_cnt = 5;
 
 
 let imgs;
@@ -134,17 +135,32 @@ function create_img()
     if (stairs_status[i].state === 1)
     {
         return;
-    }
+    }1
 
-    src_idx = Math.floor(Math.random() * img_src.length);
+    //src_idx = Math.floor(Math.random() * img_src.length);  // select the stair category
+    src_idx = 0;  // select the stair category
 
     // stair img
     imgs[i].src = img_src[src_idx];
     imgs[i].alt="normal_stair"
     stairs_status[i].idx = src_idx;
     imgs[i].addEventListener("load", () => { getSize(i); });
+}
 
-    //ele[i].style.top = '-' + (ele[i].offsetHeight + 100) + 'px';
+function create_top_bar()
+{
+    //HP
+    let life_area = document.querySelector(".hp");
+    let life_img;
+    for (i = 0; i < life_cnt; i++)
+    {
+        life_img = document.createElement("img");
+        life_img.src="img/heart.png";
+        life_img.className = "heart"+i;
+
+        life_area.appendChild(life_img);
+        //life_area.appendChild(document.createElement('img')).src='img/heart.png';
+    }
 }
 
 let main_stair_exist = 0;
@@ -206,16 +222,35 @@ function game_over_cond()
     let over = false;
 
     //console.log(bg.style.height);   
+    /*
+    if (role_status.y <= 0)
+    {
+        let remain = life_cnt-1;
+        let tmp = ".heart" + remain;
+        //let life_img = document.querySelector(tmp);
+        let life_img = document.getElementsByClassName(tmp);
+        life_img[0].style.visibility = 'hidden';
+        //life_img[0].style.visibility = 'hidden';
+        console.log(tmp);
+        life_cnt -= 1;
+        console.log(life_cnt);
+        //restart();
+    }
+    */
 
     // 1. the upper sting
     // 2. the bottom
-    if (role_status.y <= 0 || (role_status.y + role_atr.offsetHeight) >= bg.offsetHeight)
+    //if ((role_status.y + role_atr.offsetHeight) >= bg.offsetHeight)
+    if ((role_status.y <= 0) || (role_status.y + role_atr.offsetHeight) >= bg.offsetHeight)
     {
         over = true;
     }
 
     // 3. the life is lost(final)
-
+    else if (life_cnt == 0)
+    {
+        over = true;
+    }
 
     return over;
 }
@@ -311,12 +346,12 @@ function getKey(e)
 
     if (e.code === "ArrowRight")
     {
-        role_status.x += 8;
+        role_status.x += 9;
         role_atr.style.left = role_status.x + "px";
     }
     else if (e.code === "ArrowLeft")
     {
-        role_status.x -= 8;
+        role_status.x -= 9;
         role_atr.style.left = role_status.x + "px";
     }
     else
@@ -330,6 +365,7 @@ function getKey(e)
         {
             role_status.state = 1;
             fall_ivl_id = setInterval(free_fall, 30);
+            role_status.stair_right = role_status.stair_left = -1;
         }
         fall_flag = true;
     }
@@ -344,6 +380,7 @@ function getKey(e)
 // initialize the status of stairs
 window.onload = function()
 {
+    create_top_bar();
     imgs = document.querySelectorAll(".img_stair");
     for (i = 0; i < imgs.length; i++)
     {
@@ -352,13 +389,10 @@ window.onload = function()
 
     // state 0: not loaded yet, 1: loaded (move down), 2: stand on stair (move up)
     role_status = {x: 0, y:0, state: 0, img_idx: -1, stair_left:-1, stair_right: -1};
-    //role_status = {x: 0, y:0, state: 0, img_idx: -1};
 
     //console.log(stairs_arr.length)
     img_ivl_id = setInterval(create_img, 300);
-    up_ivl_id = setInterval(moveUp, 27);
+    up_ivl_id = setInterval(moveUp, 28);
 
-
-    // 控制人要向下還向上的 function
     create_role();
 }
