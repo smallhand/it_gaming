@@ -1,21 +1,33 @@
 body {
-    width: 90%;
+    width: 100%;
     margin: 0 auto;
+}
+
+.board {
+    position: absolute;
+    margin-left: 50%;
+    margin-right: 50%;
+    width: 550px;
+    transform: translate(-50%, 0%);
 }
 
 .bg {
     background-color: rgb(120, 179, 239);
     position: relative;
-    left: 35%;
     /*margin: 1%;*/
     /*overflow: auto;*/
     overflow: hidden;
     width: 550px;
     height: 700px;
 }
+.hp, .sc {
+    position: relative;
+    float: left;
+    width: 265px;
+}
 
 .up_spike {
-    position: absolute;
+    position: relative;
     float: left;
     width: fit-content;
     height: fit-content;
@@ -23,7 +35,6 @@ body {
 
 .top_bar {
     position: relative;
-    left: 35%;
     width: fit-content;
     height: fit-content;
     margin-top: 1%;

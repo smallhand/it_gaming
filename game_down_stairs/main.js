@@ -9,6 +9,9 @@ let stairs_status = [];
 let fall_flag;
 let t;
 let life_cnt = 5;
+let total_sc = 0;
+let up_pxl = 4;
+let always_down = false; // when bump to the spike
 
 
 let imgs;
@@ -41,15 +44,16 @@ function moveUp() // move up stairs 5px/T
         return;
     }
     let role_atr = document.querySelector(".role");
+    let sp_sc = document.querySelector(".score");
     if (main_stair_exist === 1)
     {
         let stair_atr = document.querySelector(".role_stair");
         if ((parseFloat(stair_atr.style.top) + stair_atr.offsetHeight) >= 0)
         {
-            stair_atr.style.top = parseFloat(stair_atr.style.top) -5 +"px";
+            stair_atr.style.top = parseFloat(stair_atr.style.top) -up_pxl +"px";
             if (role_status.img_idx === -1)
             {
-                role_status.y -= 5;
+                role_status.y -= up_pxl;
                 role_atr.style.top = role_status.y + "px";
                 if (game_over_cond() === true)
                 {
@@ -72,12 +76,12 @@ function moveUp() // move up stairs 5px/T
         {
             if ((parseFloat(stairs_arr[idx].style.top) + stairs_arr[idx].offsetHeight) >= 0)
             {
-                stairs_arr[idx].style.top = parseFloat(stairs_arr[idx].style.top) -5 +"px";
+                stairs_arr[idx].style.top = parseFloat(stairs_arr[idx].style.top) - up_pxl +"px";
                 stairs_status[idx].y = parseFloat(stairs_arr[idx].style.top);
 
-                if (role_status.state!=2)
+                if (role_status.state!=2) // falling
                 {
-                    if (detect_bump(idx) === 1)
+                    if (always_down===false && detect_bump(idx) === 1)
                     {
                         role_status.y = stairs_status[idx].y - role_img.offsetHeight;
                         role_atr.style.top = role_status.y + "px";
@@ -87,14 +91,20 @@ function moveUp() // move up stairs 5px/T
                         clearInterval(fall_ivl_id);
 
                         role_status.img_idx = idx;
+                        total_sc += 10;
+                        if (sp_sc.hasChildNodes())
+                        {
+                            sp_sc.removeChild(sp_sc.firstChild);
+                        }
+                        sp_sc.appendChild(document.createTextNode(total_sc));
                         console.log("bump");
                     }
                 }
-                else if (role_status.state === 2)
+                else if (role_status.state === 2) // man move up with the stair
                 {
                     if (idx === role_status.img_idx)
                     {
-                        //role_atr.style.top = parseFloat(role_atr.style.top) -5 +"px";
+                        //role_atr.style.top = parseFloat(role_atr.style.top) - up_pxl +"px";
                         //role_status.y = parseFloat(role_atr.style.top);
 
                         role_status.y = stairs_status[idx].y - role_atr.offsetHeight;
@@ -102,6 +112,22 @@ function moveUp() // move up stairs 5px/T
                         if (game_over_cond() === true)
                         {
                             restart();
+                        }
+                        if (role_status.y <= 0)
+                        {
+                            let remain = life_cnt-1;
+                            let tmp = ".heart" + remain;
+                            let life_img = document.querySelector(tmp);
+                            life_img.style.visibility = 'hidden';
+                            console.log(tmp);
+                            life_cnt -= 1;
+                            console.log('life cnt' + life_cnt);
+                            //role_status.y -= 20;
+                            //role_atr.style.top = role_status.y + "px";
+                            role_status.state = 1;
+                            t = 1;
+                            always_down = true;
+                            fall_ivl_id = setInterval(free_fall, 30);
                         }
                     }
                 }
@@ -207,9 +233,6 @@ function create_role()
         role_status.stair_left  = parseFloat(stair_atr.style.left);
         role_status.stair_right = role_status.stair_left +  stair_atr.offsetWidth;
 
-        //console.log(role_status.stair_left);
-        //console.log(role_status.stair_right);
-
         main_stair_exist = 1;
         loaded += 1;
     });
@@ -222,26 +245,12 @@ function game_over_cond()
     let over = false;
 
     //console.log(bg.style.height);   
-    /*
-    if (role_status.y <= 0)
-    {
-        let remain = life_cnt-1;
-        let tmp = ".heart" + remain;
-        //let life_img = document.querySelector(tmp);
-        let life_img = document.getElementsByClassName(tmp);
-        life_img[0].style.visibility = 'hidden';
-        //life_img[0].style.visibility = 'hidden';
-        console.log(tmp);
-        life_cnt -= 1;
-        console.log(life_cnt);
-        //restart();
-    }
-    */
 
     // 1. the upper sting
     // 2. the bottom
     //if ((role_status.y + role_atr.offsetHeight) >= bg.offsetHeight)
-    if ((role_status.y <= 0) || (role_status.y + role_atr.offsetHeight) >= bg.offsetHeight)
+    if ((role_status.y + role_atr.offsetHeight) >= bg.offsetHeight)
+    //if ((role_status.y <= 0) || (role_status.y + role_atr.offsetHeight) >= bg.offsetHeight)
     {
         over = true;
     }
@@ -258,7 +267,7 @@ function game_over_cond()
 function restart()
 {
     msg_id = setInterval(function(){
-        alert("game over");
+        //alert("game over");
     },0);
     clearInterval(up_ivl_id);
     clearInterval(img_ivl_id);
@@ -268,7 +277,7 @@ function restart()
         clearInterval(msg_id);
     },1);
 
-    location.reload();
+    //location.reload();
 }
 
 function detect_bump(stair_idx)
@@ -299,7 +308,9 @@ function game_over()
 
 function free_fall()
 {
+    let sp_sc = document.querySelector(".score");
     //console.log("free fall !!");
+    role_img = document.querySelector(".img_role");
     let bg = document.querySelector(".bg");
     let role_atr = document.querySelector(".role");
     let game_over = false;
@@ -318,26 +329,33 @@ function free_fall()
     {
         restart();
     }
-    /*
     else // 偵測有沒有撞到階梯
     {
         for (let i = 0; i < stairs_arr.length; i++)
         {
-            if (role_status.y >= parseFloat(stairs_arr[i].style.top) && 
-                role_status.y <= parseFloat(stairs_arr[i].style.top) + stairs_arr[i].offsetHeight &&
-                role_status.x >= parseFloat(stairs_arr[i].style.left) &&
-                role_status.x <= parseFloat(stairs_arr[i].style.left) + stairs_arr[i].offsetWidth )
+            if (detect_bump(i) === 1)
             {
-                role_status.img_idx = i;
-                role_status.stair_left = parseFloat(stairs_arr[i].style.left);
-                role_status.stair_right = parseFloat(stairs_arr[i].style.left) + stairs_arr[i].offsetWidth;
-                clearInterval(fall_ivl_id);
+                role_status.y = stairs_status[i].y - role_img.offsetHeight;
+                role_atr.style.top = role_status.y + "px";
+                role_status.state = 2;
+
+                role_status.stair_left = stairs_status[i].x;
+                role_status.stair_right = role_status.stair_left + stairs_arr[i].offsetWidth;
                 fall_flag = false;
+
+                clearInterval(fall_ivl_id);
+                role_status.img_idx = i;
+                total_sc += 10;
+                if (sp_sc.hasChildNodes())
+                {
+                    sp_sc.removeChild(sp_sc.firstChild);
+                }
+                sp_sc.appendChild(document.createTextNode(total_sc));
+                console.log("bump while fall");
                 break;
             }
         }
     }
-    */
 }
 
 function getKey(e)
@@ -392,7 +410,8 @@ window.onload = function()
 
     //console.log(stairs_arr.length)
     img_ivl_id = setInterval(create_img, 300);
-    up_ivl_id = setInterval(moveUp, 28);
+    //up_ivl_id = setInterval(moveUp, 50);
+    up_ivl_id = setInterval(moveUp, 40);
 
     create_role();
 }
